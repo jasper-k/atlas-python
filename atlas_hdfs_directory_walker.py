@@ -8,6 +8,7 @@
 
 ## TO_DO
 ## create tag if not existant
+## handle timeouts during Rest calls (Hbase connection errors)
 
 import urllib2
 import base64
@@ -46,8 +47,8 @@ class DirectoryTagger(object):
 
     def atlasRestPostTag(self, tag, guid):
         body = '{"classification":{"typeName":"'+tag+'","attributes":{}},"entityGuids":["'+guid+'"]}'
-        print("Atlas REST POST call body: "+body)
-        print(self.props['atlas_rest_url']+'entity/bulk/classification')
+        # print("Atlas REST POST call body: "+body)
+        # print(self.props['atlas_rest_url']+'entity/bulk/classification')
         req = urllib2.Request(self.props['atlas_rest_url']+'entity/bulk/classification', body, {'Content-Type': 'application/json'})
         req.add_header("Authorization", "Basic %s" % self.base64string)
         try:
@@ -70,7 +71,7 @@ class DirectoryTagger(object):
             if (response.getcode()==200):
                 response_json = json.load(response)
                 print "HDFS entity : "+path+" successfully created/updated"
-                #       print response_json
+                #print response_json
             response.close()
             if 'UPDATE' in response_json['mutatedEntities']:
                 return response_json['mutatedEntities']['UPDATE'][0]['guid']
